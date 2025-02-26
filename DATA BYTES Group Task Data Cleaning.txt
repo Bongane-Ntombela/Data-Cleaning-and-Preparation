@@ -1,0 +1,193 @@
+DATA BYTES Group Task: Data Cleaning and Preparation
+
+Group Members:
+Matome Ramatsoma
+Bongane Ntombela
+Teddy Motswiri
+Thato Theophelus Ndlovu
+Raphaahle Concilia Mogano
+
+
+1. A CSV file named employee_data.csv with columns: EmployeeID, Name, Department, and Salary with eight rows of data, with some rows having missing or incorrect values.
+
+import csv
+
+def create_employee_data_csv():
+
+    data = [
+        ("employeeID", "Name", "Department", "Salary"),
+        (1, "Nthabiseng Mofokeng", "Safety", 50000),
+        (2, "Robert Ndwandwe", "IT", 60000),
+        (3, "Mpumi Molefe", "Finance", ""),
+        (4, "Tshenolo Ndlovu", "", 45000),
+        (5, "Bongane Ntombela", "Sales", 84000),
+        (6, "Alice White", "HR", 52000),
+        (7, "Pholoso Ndlovu", "Safety", 57000),
+        (8, "Thabang Mokwena", "Finance", ""),
+        (9, "Thato Morena", "Sales", 40000),
+        (10, "Rachel Ndlovu", "IT", 76000),
+        (11, "Nthabiseng Mofokeng", "Safety", 50000),
+        (7, "Pholoso Ndlovu", "Safety", 57000),
+        (8, "Thabang Mokwena", "Finance", ""),
+    ]
+
+    try:
+        with open("employee_data.csv", "w", newline="", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            # Crucial:  Handling potential empty strings more robustly
+            for row in data:
+                writer.writerow([str(cell) for cell in row])  # Converting to strings
+        print("employee_data.csv file created successfully.")
+    except Exception as e:
+        print(f"Error creating file: {e}")
+
+create_employee_data_csv()
+
+
+2. A Python program using pandas to load the data from employee_data.csv and identifying rows with missing values.
+
+import pandas as pd
+
+def load_and_identify_missing_values():
+    
+    try:
+        file_path = pd.read_csv("employee_data.csv")
+        
+        print("Original DataFrame:")
+        print(file_path)
+        
+        missing_values = file_path[file_path.isnull().any(axis=1)]
+        
+        if missing_values.empty:
+            print("\nNo missing values found.")
+        else:
+            print("\nRows with missing values:")
+            print(missing_values)
+    
+    except FileNotFoundError:
+        print(f"Error: File 'employee_data.csv' not found.")
+    except pd.errors.EmptyDataError:
+        print("Error: CSV file is empty.")
+    except Exception as e:
+        print(f"Error loading or processing file: {e}")
+
+load_and_identify_missing_values()
+
+3. Cleaning the data by filling in the missing values for the Salary column with the mean salary of the existing records.
+
+import pandas as pd
+
+def load_and_fill_missing_salary():
+
+    try:
+        file_path = pd.read_csv("employee_data.csv")
+
+        print("Original DataFrame:")
+        print(file_path)
+
+        try:
+          mean_salary = file_path['Salary'].mean()
+        except TypeError:
+          print("Error: Cannot calculate mean; Salary column contains non-numeric values.")
+          return 
+
+        file_path['Salary'] = file_path['Salary'].fillna(mean_salary)
+
+        print("\nDataFrame with filled missing salaries:")
+        print(file_path)
+
+    except FileNotFoundError:
+        print(f"Error: File 'employee_data.csv' not found.")
+    except pd.errors.EmptyDataError:
+        print("Error: CSV file is empty.")
+    except Exception as e:
+        print(f"Error loading or processing file: {e}")
+
+
+load_and_fill_missing_salary()
+
+4. Removing duplicate rows based on the EmployeeID column, and displaying the cleaned DataFrame.
+
+import pandas as pd
+
+def load_and_clean_employee_data():
+
+    try:
+        file_path = pd.read_csv("employee_data.csv")
+
+        print("Original DataFrame:")
+        print(file_path)
+
+        try:
+            mean_salary = file_path['Salary'].astype(float).mean()  # Crucial: Convert to float
+        except (TypeError, ValueError) as e:
+            print(f"Error calculating mean salary: {e}")
+            print("Cannot proceed with cleaning due to non-numeric data in the 'Salary' column.")
+            return
+
+        try:
+            file_path['Salary'] = file_path['Salary'].astype(float).fillna(mean_salary)
+        except (TypeError, ValueError) as e:
+            print(f"Error filling missing values: {e}")
+            print("Cannot proceed with cleaning due to non-numeric data in the 'Salary' column.")
+            return
+
+        file_path = file_path.drop_duplicates(subset=['employeeID'], keep='first')
+        
+        print("\nCleaned DataFrame (duplicates removed):")
+        print(file_path)
+
+    except FileNotFoundError:
+        print(f"Error: File 'employee_data.csv' not found.")
+    except pd.errors.EmptyDataError:
+        print("Error: CSV file is empty.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+
+load_and_clean_employee_data()
+
+5. Saving the cleaned data to a new file named cleaned_employee_data.csv and verifying the changes.
+
+import pandas as pd
+
+def load_and_clean_employee_data_and_save():
+
+    try:
+        file_path = pd.read_csv("employee_data.csv")
+
+        print("Original DataFrame:")
+        print(file_path)
+
+        try:
+            mean_salary = file_path['Salary'].astype(float).mean()
+            file_path['Salary'] = file_path['Salary'].astype(float).fillna(mean_salary)
+        except (TypeError, ValueError) as e:
+            print(f"Error calculating or filling salary: {e}")
+            print("Cannot proceed with cleaning due to non-numeric data in the 'Salary' column.")
+            return
+
+        file_path = file_path.drop_duplicates(subset=['employeeID'], keep='first')
+
+        # Displaying cleaned DataFrame
+        print("\nCleaned DataFrame (duplicates removed):")
+        print(file_path)
+
+        file_path.to_csv("cleaned_employee_data.csv", index=False)
+        print("\nCleaned data saved to cleaned_employee_data.csv")
+
+
+    except FileNotFoundError:
+        print(f"Error: File 'employee_data.csv' not found.")
+    except pd.errors.EmptyDataError:
+        print("Error: CSV file is empty.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+
+
+load_and_clean_employee_data_and_save()
+
+
+
+
